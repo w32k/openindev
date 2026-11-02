@@ -64,6 +64,12 @@ bool gfx_init(){
     return init_vb();
 }
 
+bool gfx_resize(size_t width, size_t height){
+    D3DVIEWPORT9 viewData = { 0, 0, width, height, 0.0f, 1.0f };
+    g_d3dDevice->lpVtbl->SetViewport(g_d3dDevice, &viewData); // TODO: error checking
+    return TRUE;
+}
+
 bool gfx_draw_triangle(){
     g_d3dDevice->lpVtbl->Clear(g_d3dDevice, 0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 

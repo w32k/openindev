@@ -23,6 +23,11 @@ LRESULT WINAPI window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             break;
         }
         case WM_SIZE:{
+            size_t width = LOWORD(lParam);
+            size_t height = HIWORD(lParam);
+            if(g_winInfo->onResize != NULL){
+                g_winInfo->onResize(width, height);
+            }
             break;
         }
         case WM_MOUSEMOVE:{
@@ -95,6 +100,7 @@ bool win_create_window(windowinfo_t* winInfo){
     while(GetMessage(&msg, NULL, 0, 0) != 0){
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+        InvalidateRect(g_hWnd, NULL, TRUE);
     }
     if(g_winInfo->onLoad != NULL){
         g_winInfo->onClose();

@@ -12,6 +12,10 @@ bool on_draw(){
     return TRUE;
 }
 
+bool on_resize(size_t width, size_t height){
+    gfx_resize(width, height);
+    return TRUE;
+}
 bool on_close(){
     gfx_destroy();
     return TRUE;
@@ -27,6 +31,7 @@ int main(){
     window.onDraw = on_draw;
     window.onLoad = on_load;
     window.onClose = on_close;
+    window.onResize = on_resize;
     win_create_window(&window);
     return 0;
 }
