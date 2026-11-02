@@ -36,14 +36,14 @@ static bool init_d3d(){
 
 static bool init_vb(){
     CUSTOMVERTEX vertices[] = {
-        { 250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00, },
-        {  50.0f, 250.0f, 0.5f, 1.0f, 0xff0000ff, },
-        {  50.0f,  50.0f, 0.5f, 1.0f, 0xffff0000, },
+        { 250.0f, 250.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(0, 255, 0)},
+        {  50.0f, 250.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(0, 0, 255)},
+        {  50.0f,  50.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(255, 0, 0)},
 
 
-        { 250.0f, 50.0f, 0.5f, 1.0f, 0xff00ff00, },
-        {  250.0f,  250.0f, 0.5f, 1.0f, 0xff00ff00, },
-        {  50.0f, 50.0f, 0.5f, 1.0f, 0xffff0000, },
+        { 250.0f, 50.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(255, 255, 255)},
+        {  250.0f,  250.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(0, 255, 0)},
+        {  50.0f, 50.0f, 0.5f, 1.0f, D3DCOLOR_XRGB(255, 0, 0)},
 
     };
     HRESULT result = g_d3dDevice->lpVtbl->CreateVertexBuffer(g_d3dDevice, 6 * sizeof(CUSTOMVERTEX), 0, D3DFVF_CUSTOMVERTEX, D3DPOOL_DEFAULT, &g_d3dVB, NULL);
@@ -52,7 +52,7 @@ static bool init_vb(){
         return FALSE;
     }
     void* pVertices;
-    g_d3dVB->lpVtbl->Lock(g_d3dVB, 0, sizeof(vertices), (void**)&pVertices, 18);
+    g_d3dVB->lpVtbl->Lock(g_d3dVB, 0, sizeof(vertices), (void**)&pVertices, 9);
     CopyMemory(pVertices, vertices, sizeof(vertices));
     g_d3dVB->lpVtbl->Unlock(g_d3dVB);
     return TRUE;
@@ -69,7 +69,7 @@ bool gfx_draw_triangle(){
 
     g_d3dDevice->lpVtbl->BeginScene(g_d3dDevice);
     g_d3dDevice->lpVtbl->SetStreamSource(g_d3dDevice, 0, g_d3dVB, 0, sizeof(CUSTOMVERTEX));
-    g_d3dDevice->lpVtbl->SetFVF(g_d3dDevice, D3DFVF_CUSTOMVERTEX );
+    g_d3dDevice->lpVtbl->SetFVF(g_d3dDevice, D3DFVF_CUSTOMVERTEX);
     g_d3dDevice->lpVtbl->DrawPrimitive(g_d3dDevice, D3DPT_TRIANGLELIST, 0, 2);
     g_d3dDevice->lpVtbl->EndScene(g_d3dDevice);
 
