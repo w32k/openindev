@@ -13,6 +13,8 @@
 
 
 int win_create(window_t* window){
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_VIDEO, SDL_LOG_PRIORITY_VERBOSE);
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_SYSTEM, SDL_LOG_PRIORITY_VERBOSE);
     bool result = SDL_Init(SDL_INIT_VIDEO);
     if(result == false){
         DEBUG_FAIL("couldn't initialize SDL!\n");
@@ -20,7 +22,9 @@ int win_create(window_t* window){
     }
     int flag = 0;
     #ifdef GRAPHICS_OPENGLES_20
+
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+    //SDL_SetHint(SDL_HINT_OPENGL_LIBRARY, "libGLESv2.dll");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
