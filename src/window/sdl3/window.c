@@ -6,7 +6,7 @@
 
 // static window_t* g_Window;
 // static SDL_Window* window = NULL;
-// #ifdef GRAPHICS_OPENGLES_20
+// #ifdef GRAPHICS_GLES2
 // static SDL_GLContext context = NULL
 // #endif
 
@@ -21,10 +21,9 @@ int win_create(window_t* window){
         return -1;
     }
     int flag = 0;
-    #ifdef GRAPHICS_OPENGLES_20
+    #ifdef GRAPHICS_GLES2
 
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-    //SDL_SetHint(SDL_HINT_OPENGL_LIBRARY, "libGLESv2.dll");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -38,7 +37,7 @@ int win_create(window_t* window){
         goto END_4;
         return false;
     }
-    #ifdef GRAPHICS_OPENGLES_20
+    #ifdef GRAPHICS_GLES2
     SDL_GLContext glContext = SDL_GL_CreateContext(sdlWindow);
     if(glContext == NULL){
         DEBUG_INFO("can't create gl context: %s\n", SDL_GetError());
@@ -77,7 +76,7 @@ int win_create(window_t* window){
         bool result = window->render(window->userData);
         if(result == false) break;
         rndr_end();
-        #ifdef GRAPHICS_OPENGLES_20
+        #ifdef GRAPHICS_GLES2
         SDL_GL_SwapWindow(sdlWindow);
         #endif
     }
@@ -85,7 +84,7 @@ int win_create(window_t* window){
 END_1:
     rndr_destroy();
 END_2:
-    #ifdef GRAPHICS_OPENGLES_20
+    #ifdef GRAPHICS_GLES2
     SDL_GL_DestroyContext(glContext);
     #endif
 END_3:
