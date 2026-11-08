@@ -2,13 +2,20 @@
 
 
 target("openindev")
-    add_toolchains("x86_64-mingw")
+    if is_os("windows") then
+        add_toolchains("x86_64-mingw")
+        add_linkdirs("vendor/x64-mingw")
+        add_links("SDL3.dll")
+    else
+        add_links("SDL3")
+    end
     set_targetdir(".")
-    add_linkdirs("vendor/x64-mingw")
+
     add_includedirs("vendor/include", "includes")
     add_cflags("-Wall -Wextra -Werror", {force = true})
     add_files("src/*.c")
-    add_links("SDL3.dll")
+
+
 
 
 
