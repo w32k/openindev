@@ -13,7 +13,11 @@
 
 
 int win_create(window_t* window){
-    SDL_Init(0);
+    bool result = SDL_Init(0);
+    if(result == false){
+        DEBUG_FAIL("couldn't initialize SDL!\n");
+        return -1;
+    }
     int flag = 0;
     #ifdef GRAPHICS_OPENGLES_20
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
@@ -22,22 +26,30 @@ int win_create(window_t* window){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     flag = SDL_WINDOW_OPENGL;
     #endif
+
+    DEBUG_INFO("Creating SDL3 Window\n");
     SDL_Window* sdlWindow = SDL_CreateWindow(window->title, window->width, window->height, flag | SDL_WINDOW_RESIZABLE);
     if(sdlWindow == NULL){
+        goto END_4;
         return false;
     }
     #ifdef GRAPHICS_OPENGLES_20
     SDL_GLContext glContext = SDL_GL_CreateContext(sdlWindow);
     if(glContext == NULL){
+        goto END_3;
         return false;
     }
     SDL_GL_MakeCurrent(sdlWindow, glContext);
     #endif
-    bool result = rndr_create();
-    if(result == false) return -2;
+    result = rndr_create();
+    if(result == false){
+        DEBUG_FAIL("couldn't setup renderer\n");
+        goto END_2;
+    }
     rndr_resize(window->width, window->height);
 
-    window->init(window->userData);
+    result = window->init(window->userData);
+    if(result == false) goto END_1;
     SDL_Event event;
     bool running = true;
     while(running){
@@ -49,24 +61,30 @@ int win_create(window_t* window){
                 }
                 case SDL_EVENT_WINDOW_RESIZED:{
                     rndr_resize(event.window.data1, event.window.data2);
-                    window->resize(window->userData, event.window.data1, event.window.data2);
+                    bool result = window->resize(window->userData, event.window.data1, event.window.data2);
+                    if(result == false) break;
                     break;
                 }
             }
         }
         rndr_begin();
-        window->render(window->userData);
+        bool result = window->render(window->userData);
+        if(result == false) break;
         rndr_end();
         #ifdef GRAPHICS_OPENGLES_20
         SDL_GL_SwapWindow(sdlWindow);
         #endif
     }
     window->cleanup(window->userData);
+END_1:
     rndr_destroy();
+END_2:
     #ifdef GRAPHICS_OPENGLES_20
     SDL_GL_DestroyContext(glContext);
     #endif
+END_3:
     SDL_DestroyWindow(sdlWindow);
+END_4:
     SDL_Quit();
     return 0;
 }

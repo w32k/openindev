@@ -8,10 +8,10 @@
 #include <openindev.h>
 
 
-typedef void (*wininit_t)(void* data);
-typedef void (*winonresize_t)(void* data, int width, int height);
-typedef void (*winrender_t)(void* data);
-typedef void (*wincleanup_t)(void* data);
+typedef bool (*wininit_t)(void* data);
+typedef bool (*winonresize_t)(void* data, int width, int height);
+typedef bool (*winrender_t)(void* data);
+typedef bool (*wincleanup_t)(void* data);
 
 typedef struct window {
     const char* title;

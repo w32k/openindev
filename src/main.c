@@ -12,24 +12,28 @@ static unsigned int indices[] = {
     0, 1, 2, 0, 2, 3
 };
 
-void init(void* data){
+bool init(void* data){
     (void)data;
+    return true;
 }
 
-void resize(void* data, int width, int height){
+bool resize(void* data, int width, int height){
     (void)data;
     (void)width;
     (void)height;
+    return true;
 }
 
-void render(void* data){
+bool render(void* data){
     (void)data;
     rndr_clear(0, 0, 0, 0);
     rndr_draw_vertices_with_indices(vertices, 0, 3, indices, 6);
+    return true;
 }
 
-void cleanup(void* data){
+bool cleanup(void* data){
     (void)data;
+    return true;
 }
 
 int main(){
