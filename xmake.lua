@@ -12,8 +12,10 @@ target("openindev")
     set_targetdir(".")
 
     add_includedirs("vendor/include", "includes")
-    add_cflags("-Wall -Wextra -Werror", {force = true})
-    add_files("src/*.c")
+    -- TODO: use options to easily make people be able to switch different
+    -- windowing and graphics libraries
+    add_cflags("-Wall -Wextra -Werror -DGRAPHICS_OPENGLES_20 -DWINDOW_SDL3", {force = true})
+    add_files("src/main.c", "src/renderer/opengles20/*.c", "src/window/sdl3/*.c")
 
 
 
