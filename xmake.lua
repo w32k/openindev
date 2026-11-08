@@ -5,7 +5,7 @@ target("openindev")
     if is_os("windows") then
         add_toolchains("x86_64-mingw")
         add_linkdirs("vendor/x64-mingw")
-        add_links("SDL3.dll", "GLESv2.dll")
+        add_links("SDL3.dll")
     else
         add_links("SDL3")
     end

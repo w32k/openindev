@@ -13,7 +13,7 @@
 
 
 int win_create(window_t* window){
-    bool result = SDL_Init(0);
+    bool result = SDL_Init(SDL_INIT_VIDEO);
     if(result == false){
         DEBUG_FAIL("couldn't initialize SDL!\n");
         return -1;
@@ -21,21 +21,23 @@ int win_create(window_t* window){
     int flag = 0;
     #ifdef GRAPHICS_OPENGLES_20
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES );
     flag = SDL_WINDOW_OPENGL;
     #endif
 
     DEBUG_INFO("Creating SDL3 Window\n");
     SDL_Window* sdlWindow = SDL_CreateWindow(window->title, window->width, window->height, flag | SDL_WINDOW_RESIZABLE);
     if(sdlWindow == NULL){
+        DEBUG_INFO("can't create window: %s\n", SDL_GetError());
         goto END_4;
         return false;
     }
     #ifdef GRAPHICS_OPENGLES_20
     SDL_GLContext glContext = SDL_GL_CreateContext(sdlWindow);
     if(glContext == NULL){
+        DEBUG_INFO("can't create gl context: %s\n", SDL_GetError());
         goto END_3;
         return false;
     }

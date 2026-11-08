@@ -73,7 +73,7 @@ bool rndr_create(){
         DEBUG_FAIL("couldn't initialize GLAD\n");
         return false;
     }
-    printf("VENDOR: %s\nVERSION: %s\nGPU: %s\n",
+    printf("VENDOR: %s\nVERSION: %s\nRENDERER: %s\n",
             (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_VERSION), (char*)glGetString(GL_RENDERER));
     #endif
     vertexShader = create_shader(GL_VERTEX_SHADER, vertexSource);
