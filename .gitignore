@@ -1,4 +1,5 @@
 .xmake/
 build/
-bin/
+vendor/
 *.exe
+*.dll
