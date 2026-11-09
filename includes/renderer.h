@@ -15,6 +15,7 @@ void rndr_clear(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 void rndr_begin();
 void rndr_end();
 void rndr_draw_vertices_with_indices(float vertices[], uint32_t vFirst, uint32_t vCount, uint32_t indices[], uint32_t iCount);
+void rndr_draw_square(float x, float y, float size, float rotation);
 void rndr_destroy();
 
 

@@ -1,16 +1,25 @@
 #include <renderer.h>
 #include <window.h>
 
-static float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.5f, 0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f,
-};
+// static float vertices[] = {
+//     -0.5f, -0.5f, 0.0f,
+//     0.5f, -0.5f, 0.0f,
+//     0.5f, 0.5f, 0.0f,
+//     -0.5f, 0.5f, 0.0f,
+// };
 
-static unsigned int indices[] = {
-    0, 1, 2, 0, 2, 3
-};
+// static unsigned int indices[] = {
+//     0, 1, 2, 0, 2, 3
+// };
+
+// // static float texCoords[] = {
+// //     0.0f, 0.0f,
+// //     1.0f, 0.0f,
+// //     1.0f, 1.0f,
+// //     0.0f, 1.0f
+// // };
+//
+static float i = 0;
 
 bool init(void* data){
     (void)data;
@@ -26,8 +35,10 @@ bool resize(void* data, int width, int height){
 
 bool render(void* data){
     (void)data;
-    rndr_clear(0, 0, 0, 0);
-    rndr_draw_vertices_with_indices(vertices, 0, 3, indices, 6);
+    rndr_clear(0, 1.0f, 0, 0);
+    //rndr_draw_vertices_with_indices(vertices, 0, 3, indices, 6);
+    rndr_draw_square(0.3f, 0.2f, 0.3f, i);
+    i += 0.001f;
     return true;
 }
 

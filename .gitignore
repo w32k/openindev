@@ -3,3 +3,4 @@ build/
 vendor/
 *.exe
 *.dll
+assets/
