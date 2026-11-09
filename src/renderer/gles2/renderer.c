@@ -41,11 +41,11 @@ static char* load_shader_from_file(const char* path){
     }
     size_t returnedSize = fread((void*)buffer, sizeof(char), fileSize, fp);
     if(returnedSize != fileSize){
-        DEBUG_FAIL("file size (%lld) and size read (%lld) don't match\n", fileSize, returnedSize);
+        //DEBUG_FAIL("file size (%lld) and size read (%lld) don't match\n", fileSize, returnedSize);
         free(buffer);
         goto LOAD_SHADER_EXIT;
     }
-    DEBUG_INFO("loaded shader %s with size of %lld\n", path, returnedSize);
+    //DEBUG_INFO("loaded shader %s with size of %lld\n", path, returnedSize);
 LOAD_SHADER_EXIT:
     fclose(fp);
     return buffer;
