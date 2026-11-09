@@ -89,6 +89,7 @@ END_2:
 END_3:
     SDL_DestroyWindow(sdlWindow);
 END_4:
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_Quit();
     return 0;
 }
