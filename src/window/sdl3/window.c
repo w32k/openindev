@@ -4,17 +4,14 @@
 #include <renderer.h>
 
 
-// static window_t* g_Window;
-// static SDL_Window* window = NULL;
-// #ifdef GRAPHICS_GLES2
-// static SDL_GLContext context = NULL
-// #endif
 
 
+static uint32_t g_fps = 60;
+static uint32_t g_lastTime = 0;
+static uint32_t g_curTime = 0;
+//static uint32_t g_dt = 100;
 
 int win_create(window_t* window){
-    SDL_SetLogPriority(SDL_LOG_CATEGORY_VIDEO, SDL_LOG_PRIORITY_VERBOSE);
-    SDL_SetLogPriority(SDL_LOG_CATEGORY_SYSTEM, SDL_LOG_PRIORITY_VERBOSE);
     bool result = SDL_Init(SDL_INIT_VIDEO);
     if(result == false){
         DEBUG_FAIL("couldn't initialize SDL!\n");
@@ -56,6 +53,9 @@ int win_create(window_t* window){
     if(result == false) goto END_1;
     SDL_Event event;
     bool running = true;
+    uint32_t fps = 0;
+    uint32_t curTick = SDL_GetTicks();
+    g_curTime = SDL_GetTicks();
     while(running){
         while(SDL_PollEvent(&event)){
             switch(event.type){
@@ -78,6 +78,14 @@ int win_create(window_t* window){
         #ifdef GRAPHICS_GLES2
         SDL_GL_SwapWindow(sdlWindow);
         #endif
+        if(SDL_GetTicks() - curTick >= 1000){
+            g_fps = fps;
+            curTick = SDL_GetTicks();
+            DEBUG_INFO("FPS: %d\n", g_fps);
+            fps = 0;
+        } else fps++;
+        g_lastTime = g_curTime;
+        g_curTime = SDL_GetTicks();
     }
     window->cleanup(window->userData);
 END_1:
@@ -92,4 +100,13 @@ END_4:
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_Quit();
     return 0;
+}
+
+
+uint32_t win_return_fps(){
+    return g_fps;
+}
+
+float win_return_dt(){
+    return (float)(g_curTime - g_lastTime) / 1000.0f;
 }

@@ -1,28 +1,18 @@
 #include <renderer.h>
+#include <resources.h>
+
 #include <window.h>
 
-// static float vertices[] = {
-//     -0.5f, -0.5f, 0.0f,
-//     0.5f, -0.5f, 0.0f,
-//     0.5f, 0.5f, 0.0f,
-//     -0.5f, 0.5f, 0.0f,
-// };
 
-// static unsigned int indices[] = {
-//     0, 1, 2, 0, 2, 3
-// };
-
-// // static float texCoords[] = {
-// //     0.0f, 0.0f,
-// //     1.0f, 0.0f,
-// //     1.0f, 1.0f,
-// //     0.0f, 1.0f
-// // };
-//
 static float i = 0;
 
 bool init(void* data){
     (void)data;
+    printf("Sift Version %s, Implementing %s\n", VER, IMPL);
+    bool result = res_load_all_textures();
+    if(result == false){
+        return false;
+    }
     return true;
 }
 
@@ -36,14 +26,19 @@ bool resize(void* data, int width, int height){
 bool render(void* data){
     (void)data;
     rndr_clear(0, 1.0f, 0, 0);
-    //rndr_draw_vertices_with_indices(vertices, 0, 3, indices, 6);
-    rndr_draw_square(0.3f, 0.2f, 0.3f, i);
-    i += 0.001f;
+    rndr_draw_cube((vec3_t){0.0f, 0.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_BLOCK);
+    rndr_draw_texture((vec3_t){1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+    rndr_draw_texture((vec3_t){-1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+    rndr_draw_texture((vec3_t){1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+    rndr_draw_texture((vec3_t){-1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+
+    i += 100.0f * win_return_dt();
     return true;
 }
 
 bool cleanup(void* data){
     (void)data;
+    res_unload_all_loaded_textures();
     return true;
 }
 

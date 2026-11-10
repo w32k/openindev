@@ -16,7 +16,7 @@ target("openindev")
     -- TODO: use options to easily make people be able to switch different
     -- windowing and graphics libraries
     add_cflags("-Wall -Wextra -Werror -DGRAPHICS_GLES2 -DWINDOW_SDL3", {force = true})
-    add_files("src/*.c", "src/renderer/gles2/*.c", "src/window/sdl3/*.c", "src/cglm/*.c", "src/cglm/**/*.c")
+    add_files("src/*.c", "src/renderer/gles2/*.c", "src/renderer/*.c", "src/window/sdl3/*.c", "src/cglm/*.c", "src/cglm/**/*.c")
 
 
 

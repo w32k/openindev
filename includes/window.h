@@ -26,7 +26,8 @@ typedef struct window {
 
 
 int win_create(window_t* window);
-
+uint32_t win_return_fps();
+float win_return_dt();
 
 
 

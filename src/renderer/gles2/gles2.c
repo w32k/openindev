@@ -5,22 +5,18 @@
 #endif
 // TODO: use cglm instead
 // or make it seperate between a C and H file
-#include <linmath.h>
+#include <cglm/cglm.h>
 #include <strings.h>
-// TODO: put this in seperate files
-// static const char* vertexSource = "attribute vec4 vPosition;\n"
-//                                   "void main(){\n"
-//                                   "  gl_Position = vPosition;\n"
-//                                   "  gl_PointSize = 10.0;\n"
-//                                   "}\n";
-
-// static const char* fragmentSource = "void main(){\n"
-//                                     "gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);\n"
-//                                     "}\n";
+#include <stb_image.h>
+#include <resources.h>
 
 static int shaderProgram = 0;
-static float g_Width = 0;
-static float g_Height = 0;
+static float g_width = 0;
+static float g_height = 0;
+
+
+// this entire file is so ugly
+// i need to clean this up
 
 static char* load_shader_from_file(const char* path){
     char* buffer = NULL;
@@ -134,12 +130,13 @@ EXIT1:
 
 
 bool rndr_create(){
+    stbi_set_flip_vertically_on_load(true);
     #ifdef WINDOW_SDL3
     if(gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress) == 0){
         DEBUG_FAIL("couldn't initialize GLAD\n");
         return false;
     }
-    printf("VENDOR: %s\nVERSION: %s\nRENDERER: %s\n",
+    DEBUG_INFO("\n\tVENDOR: %s\n\tVERSION: %s\n\tRENDERER: %s\n",
             (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_VERSION), (char*)glGetString(GL_RENDERER));
     #endif
     shaderProgram = create_shader_program("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -147,72 +144,121 @@ bool rndr_create(){
         DEBUG_FAIL("couldn't create shader program\n");
         return false;
     }
+
+
+    glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     return true;
 }
 
 void rndr_resize(int width, int height){
     glViewport(0, 0, width, height);
-    g_Width = (float)width;
-    g_Height = (float)height;
+    g_width = (float)width;
+    g_height = (float)height;
 }
 
 void rndr_clear(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){
     glClearColor(red / 255.0f, green / 255.0f, blue / 255.0f, alpha / 255.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void rndr_begin(){
     glUseProgram(shaderProgram);
-    mat4x4 perspective;
-    mat4x4_identity(perspective);
-    mat4x4_perspective(perspective, 90, g_Width/g_Height, 0.1f, 100.0f);
+    mat4_t perspective;
+    glm_mat4_identity(perspective);
+    glm_perspective(90.0f * (M_PI / 180.0f), g_width/g_height, 0.1f, 100.0f, perspective);
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "perspective");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)perspective);
 
-    mat4x4 view;
-    mat4x4_identity(view);
-    mat4x4_translate(view, 0.0f, 0.0f, -3.0f);
+    vec3_t eye = {0};
+    eye[2] = 3.0f;
+    vec3_t center = {0};
+    vec3_t up = {0};
+    up[1] = 1.0f;
+    mat4_t view;
+
+    glm_mat4_identity(view);
+    glm_lookat(eye, center, up, view);
     unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const float*)view);
 }
 
-void rndr_draw_vertices_with_indices(float vertices[], uint32_t vFirst, uint32_t vCount, uint32_t indices[], uint32_t iCount){
-    glVertexAttribPointer(vFirst, vCount, GL_FLOAT, GL_FALSE, 0, vertices);
-    glEnableVertexAttribArray(0);
-    glDrawElements(GL_TRIANGLES, iCount, GL_UNSIGNED_INT, indices);
-}
 
-void rndr_draw_square(float x, float y, float size, float rotation){
-    (void)x;
-    (void)y;
-    (void)size;
+void rndr_draw_vertices_with_indices(float vertices[], uint32_t indices[], float indicesSize, float texCoords[], float texCoordSize,
+                     vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture)
+{
+
+    (void)rotationAngle;
     (void)rotation;
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f,
-    };
-    unsigned int indices[] = {
-        0, 1, 2, 0, 2, 3
-    };
-    mat4x4 v1;
-    mat4x4_identity(v1);
-    mat4x4 v2;
-
-    mat4x4 result;
-    mat4x4_scale(v2, v1, size);
-    mat4x4_translate(v2, x, y, 0.2f);
-    mat4x4_rotate_X(result, v2, rotation);
-
-
-
+    mat4_t result;
+    glm_translate_make(result, position);
+    glm_rotate(result, rotationAngle * (M_PI / 180.0f), rotation);
+    glm_scale(result, scale);
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     glEnableVertexAttribArray(0);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices);
+    glVertexAttribPointer(1, texCoordSize, GL_FLOAT, GL_FALSE, 0, texCoords);
+    glEnableVertexAttribArray(1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, res_get_texture(texture));
+    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, indices);
 }
+
+void rndr_draw_vertices(float vertices[], int verticesSize, float texCoords[], float texCoordSize,
+                     vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture)
+{
+
+    (void)rotationAngle;
+    (void)rotation;
+    (void)verticesSize;
+    mat4_t result;
+    glm_translate_make(result, position);
+    glm_rotate(result, rotationAngle * (M_PI / 180.0f), rotation);
+    glm_scale(result, scale);
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), vertices);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, texCoordSize, GL_FLOAT, GL_FALSE, 0, texCoords);
+    glEnableVertexAttribArray(1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, res_get_texture(texture));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+
+// TODO: optimize
+handle_t rndr_load_texture(const char* path){
+    handle_t texture = 0;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    int width, height, nrChannels;
+    uint8_t* data = stbi_load(path, &width, &height, &nrChannels, 4);
+    if(data == NULL){
+        DEBUG_INFO("can't load texture\n");
+        return 0;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+    return (handle_t)texture;
+}
+
+void rndr_unload_texture(handle_t textureID){
+    if(textureID != 0) glDeleteTextures(1, &textureID);
+}
+// "assets/minecraft/textures/blocks/dirt.png"
 
 void rndr_end(){
     // stub
