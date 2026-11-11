@@ -6,7 +6,7 @@ target("openindev")
         add_toolchains("x86_64-mingw")
         add_linkdirs("vendor/x64-mingw")
         add_ldflags("-static-libgcc -static-libstdc++", {force = true})
-        add_links("SDL3.dll", "winpthread")
+        add_links("SDL3.dll")
     else
         add_links("SDL3")
     end

@@ -18,9 +18,9 @@ static const char* texturePaths[] = {
 
 
 
-static struct textures* g_Textures = NULL;
-static int size = 0;
-static int capacity = 0;
+static struct textures* g_textures = NULL;
+static int g_size = 0;
+static int g_capacity = 0;
 
 bool res_load_texture(resourcetype_t type){
     if(type >= RESTYPE_END_OF_ENUM){
@@ -30,32 +30,32 @@ bool res_load_texture(resourcetype_t type){
         DEBUG_INFO("texture exists, but isn't in the texturePaths array\n");
         return false;
     }
-    if(size == 0){
-        size = 30;
-        g_Textures = calloc(size, sizeof(struct textures));
+    if(g_size == 0){
+        g_size = 30;
+        g_textures = calloc(g_size, sizeof(struct textures));
     }
-    if(capacity >= size){
-        size *= 2;
-        g_Textures = realloc(g_Textures, size * sizeof(struct textures));
+    if(g_capacity >= g_size){
+        g_size *= 2;
+        g_textures = realloc(g_textures, g_size * sizeof(struct textures));
     }
-    g_Textures[capacity].type = type;
-    g_Textures[capacity].id = rndr_load_texture(texturePaths[type]);
-    if(g_Textures[capacity].id == 0){
+    g_textures[g_capacity].type = type;
+    g_textures[g_capacity].id = rndr_load_texture(texturePaths[type]);
+    if(g_textures[g_capacity].id == 0){
         DEBUG_FAIL("couldn't load texture\n");
         return false;
     }
-    capacity++;
+    g_capacity++;
     return true;
 }
 // TODO: we can optimize this lol
 // every texture in the texture array is ironically corresponding with their specific index
-// we can just do g_Textures[type].id, however i'm not doing this here because
+// we can just do g_textures[type].id, however i'm not doing this here because
 // how about skins? maybe we can make it a seperate array but idk
 // we shall see :^)
 handle_t res_get_texture(resourcetype_t type){
-    for(int i = 0; i < capacity; i++){
-        if(g_Textures[i].type == type){
-            return g_Textures[i].id;
+    for(int i = 0; i < g_capacity; i++){
+        if(g_textures[i].type == type){
+            return g_textures[i].id;
         }
     }
     return 0;
@@ -78,7 +78,7 @@ bool res_load_all_textures(){
 }
 
 void res_unload_all_loaded_textures(){
-    for(int i = 0; i < capacity; i++){
-        rndr_unload_texture(g_Textures[i].id);
+    for(int i = 0; i < g_capacity; i++){
+        rndr_unload_texture(g_textures[i].id);
     }
 }

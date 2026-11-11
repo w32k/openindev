@@ -10,7 +10,7 @@
 #include <stb_image.h>
 #include <resources.h>
 
-static int shaderProgram = 0;
+static int g_shaderProgram = 0;
 static float g_width = 0;
 static float g_height = 0;
 
@@ -139,8 +139,8 @@ bool rndr_create(){
     DEBUG_INFO("\n\tVENDOR: %s\n\tVERSION: %s\n\tRENDERER: %s\n",
             (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_VERSION), (char*)glGetString(GL_RENDERER));
     #endif
-    shaderProgram = create_shader_program("shaders/vertex.glsl", "shaders/fragment.glsl");
-    if(shaderProgram == 0){
+    g_shaderProgram = create_shader_program("shaders/vertex.glsl", "shaders/fragment.glsl");
+    if(g_shaderProgram == 0){
         DEBUG_FAIL("couldn't create shader program\n");
         return false;
     }
@@ -164,11 +164,11 @@ void rndr_clear(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){
 }
 
 void rndr_begin(camera_t* camera){
-    glUseProgram(shaderProgram);
+    glUseProgram(g_shaderProgram);
     mat4_t perspective;
     glm_mat4_identity(perspective);
     glm_perspective(RADIAN(camera->fov), g_width/g_height, 0.1f, 100.0f, perspective);
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "perspective");
+    unsigned int transformLoc = glGetUniformLocation(g_shaderProgram, "perspective");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)perspective);
 
     mat4 view;
@@ -176,7 +176,7 @@ void rndr_begin(camera_t* camera){
     glm_mat4_identity(view);
     glm_vec3_add(camera->eye, camera->center, eyePlusCenter);
     glm_lookat(camera->eye, eyePlusCenter, camera->up, view);
-    unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+    unsigned int viewLoc = glGetUniformLocation(g_shaderProgram, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const float*)view);
 }
 
@@ -191,7 +191,7 @@ void rndr_draw_vertices_with_indices(float vertices[], uint32_t indices[], float
     glm_translate_make(result, position);
     glm_rotate(result, rotationAngle * (M_PI / 180.0f), rotation);
     glm_scale(result, scale);
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    unsigned int transformLoc = glGetUniformLocation(g_shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
@@ -215,7 +215,7 @@ void rndr_draw_vertices(float vertices[], int verticesSize, float texCoords[], f
     glm_translate_make(result, position);
     glm_rotate(result, RADIAN(rotationAngle), rotation);
     glm_scale(result, scale);
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    unsigned int transformLoc = glGetUniformLocation(g_shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), vertices);
@@ -261,5 +261,5 @@ void rndr_end(){
 }
 
 void rndr_destroy(){
-    if(shaderProgram != 0) glDeleteProgram(shaderProgram);
+    if(g_shaderProgram != 0) glDeleteProgram(g_shaderProgram);
 }
