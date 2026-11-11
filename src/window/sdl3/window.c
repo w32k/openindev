@@ -137,7 +137,6 @@ bool win_is_key_down(keycodes_t key){
 }
 
 
-
 void win_return_rel_mouse_state(float* x, float* y){
     SDL_GetRelativeMouseState(x, y);
 }
@@ -154,4 +153,8 @@ void win_unlock_mouse(){
 
 bool win_did_mouse_move(){
     return g_mouseMoved;
+}
+
+void win_return_window_size(int* w, int* h){
+    SDL_GetWindowSize(g_sdlWindow, w, h);
 }

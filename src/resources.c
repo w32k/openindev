@@ -14,6 +14,7 @@ static const char* texturePaths[] = {
     [RESTYPE_STONE_BLOCK] = "assets/minecraft/textures/blocks/stone.png",
     [RESTYPE_DIAMOND_BLOCK] = "assets/minecraft/textures/blocks/diamond_block.png",
     [RESTYPE_DIAMOND_ITEM] = "assets/minecraft/textures/items/diamond.png",
+    [RESTYPE_DIAMOND_SWORD] = "assets/minecraft/textures/items/diamond_sword.png"
 };
 
 

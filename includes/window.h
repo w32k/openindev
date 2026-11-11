@@ -25,5 +25,6 @@ void win_return_rel_mouse_state(float* x, float* y);
 void win_lock_mouse();
 void win_unlock_mouse();
 bool win_did_mouse_move();
+void win_return_window_size(int* w, int* h);
 
 #endif

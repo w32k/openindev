@@ -9,10 +9,17 @@
 #include <strings.h>
 #include <stb_image.h>
 #include <resources.h>
+#include <window.h>
 
-static int g_shaderProgram = 0;
-static float g_width = 0;
-static float g_height = 0;
+struct renderpipeline {
+    int shaderProgram;
+    int projectionUniform;
+    int transformUniform;
+    int viewUniform;
+};
+
+static struct renderpipeline g_pipeline3D = {0};
+static struct renderpipeline g_pipelineUI = {0};
 
 
 // this entire file is so ugly
@@ -46,6 +53,7 @@ LOAD_SHADER_EXIT:
     fclose(fp);
     return buffer;
 }
+
 
 static unsigned int compile_shader(int type, const char* source){
     int compiled = 1;
@@ -128,7 +136,6 @@ EXIT1:
     return program;
 }
 
-
 bool rndr_create(){
     stbi_set_flip_vertically_on_load(true);
     #ifdef WINDOW_SDL3
@@ -139,23 +146,39 @@ bool rndr_create(){
     DEBUG_INFO("\n\tVENDOR: %s\n\tVERSION: %s\n\tRENDERER: %s\n",
             (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_VERSION), (char*)glGetString(GL_RENDERER));
     #endif
-    g_shaderProgram = create_shader_program("shaders/vertex.glsl", "shaders/fragment.glsl");
-    if(g_shaderProgram == 0){
-        DEBUG_FAIL("couldn't create shader program\n");
+    g_pipeline3D.shaderProgram = create_shader_program("shaders/vertex.glsl", "shaders/fragment.glsl");
+    if(g_pipeline3D.shaderProgram == 0){
+        DEBUG_FAIL("couldn't create shader program for g_pipeline3D\n");
         return false;
     }
+
+    g_pipelineUI.shaderProgram = create_shader_program("shaders/vertexui.glsl", "shaders/fragui.glsl");
+    if(g_pipelineUI.shaderProgram == 0){
+        glDeleteShader(g_pipeline3D.shaderProgram);
+        DEBUG_FAIL("couldn't create shader program for g_pipelineUI\n");
+        return false;
+    }
+
+
 
 
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram(g_pipeline3D.shaderProgram);
+    g_pipeline3D.projectionUniform = glGetUniformLocation(g_pipeline3D.shaderProgram, "perspective");
+    g_pipeline3D.transformUniform = glGetUniformLocation(g_pipeline3D.shaderProgram, "transform");
+    g_pipeline3D.viewUniform = glGetUniformLocation(g_pipeline3D.shaderProgram, "view");
+    glUseProgram(g_pipelineUI.shaderProgram);
+    g_pipelineUI.projectionUniform = glGetUniformLocation(g_pipelineUI.shaderProgram, "perspective");
+    g_pipelineUI.transformUniform = glGetUniformLocation(g_pipelineUI.shaderProgram, "transform");
+    g_pipelineUI.viewUniform = glGetUniformLocation(g_pipelineUI.shaderProgram, "view");
+    glUseProgram(0);
     return true;
 }
 
 void rndr_resize(int width, int height){
     glViewport(0, 0, width, height);
-    g_width = (float)width;
-    g_height = (float)height;
 }
 
 void rndr_clear(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){
@@ -163,36 +186,31 @@ void rndr_clear(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void rndr_begin(camera_t* camera){
-    glUseProgram(g_shaderProgram);
+void rndr_begin(){
+    glUseProgram(g_pipelineUI.shaderProgram);
     mat4_t perspective;
     glm_mat4_identity(perspective);
-    glm_perspective(RADIAN(camera->fov), g_width/g_height, 0.1f, 100.0f, perspective);
-    unsigned int transformLoc = glGetUniformLocation(g_shaderProgram, "perspective");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)perspective);
+    int width = 0, height = 0;
+    win_return_window_size(&width, &height);
+    glm_ortho(0, width, height, 0, -1.0f, 1.0f, perspective);
+    glUniformMatrix4fv(g_pipelineUI.projectionUniform, 1, GL_FALSE, (const float*)perspective);
 
     mat4 view;
-    vec3 eyePlusCenter;
+    //vec3 eyePlusCenter;
     glm_mat4_identity(view);
-    glm_vec3_add(camera->eye, camera->center, eyePlusCenter);
-    glm_lookat(camera->eye, eyePlusCenter, camera->up, view);
-    unsigned int viewLoc = glGetUniformLocation(g_shaderProgram, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const float*)view);
+    //glm_rotate(view, 180 * (M_PI / 180.0f), (vec3){1.0f, 0.0f, 0.0f});
+    glUniformMatrix4fv(g_pipelineUI.viewUniform, 1, GL_FALSE, (const float*)view);
 }
 
-
-void rndr_draw_vertices_with_indices(float vertices[], uint32_t indices[], float indicesSize, float texCoords[], float texCoordSize,
+void rndr_draw_vertices_with_indices_2d(float vertices[], uint32_t indices[], float indicesSize, float texCoords[], float texCoordSize,
                      vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture)
 {
 
-    (void)rotationAngle;
-    (void)rotation;
     mat4_t result;
     glm_translate_make(result, position);
     glm_rotate(result, rotationAngle * (M_PI / 180.0f), rotation);
     glm_scale(result, scale);
-    unsigned int transformLoc = glGetUniformLocation(g_shaderProgram, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
+    glUniformMatrix4fv(g_pipelineUI.transformUniform, 1, GL_FALSE, (const float*)result);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     glEnableVertexAttribArray(0);
@@ -204,7 +222,51 @@ void rndr_draw_vertices_with_indices(float vertices[], uint32_t indices[], float
     glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, indices);
 }
 
-void rndr_draw_vertices(float vertices[], int verticesSize, float texCoords[], float texCoordSize,
+void rndr_end(){
+    glUseProgram(0);
+}
+
+void rndr_begin_3d(camera_t* camera){
+    glUseProgram(g_pipeline3D.shaderProgram);
+    mat4_t perspective;
+    glm_mat4_identity(perspective);
+    int width, height = 0;
+    win_return_window_size((int*)&width, &height);
+    glm_perspective(RADIAN(camera->fov), (float)width/(float)height, 0.1f, 100.0f, perspective);
+    glUniformMatrix4fv(g_pipeline3D.projectionUniform, 1, GL_FALSE, (const float*)perspective);
+
+    mat4 view;
+    vec3 eyePlusCenter;
+    glm_mat4_identity(view);
+    glm_vec3_add(camera->position, camera->target, eyePlusCenter);
+    glm_lookat(camera->position, eyePlusCenter, camera->up, view);
+    glUniformMatrix4fv(g_pipeline3D.viewUniform, 1, GL_FALSE, (const float*)view);
+}
+
+
+void rndr_draw_vertices_with_indices_3d(float vertices[], uint32_t indices[], float indicesSize, float texCoords[], float texCoordSize,
+                     vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture)
+{
+
+    (void)rotationAngle;
+    (void)rotation;
+    mat4_t result;
+    glm_translate_make(result, position);
+    glm_rotate(result, rotationAngle * (M_PI / 180.0f), rotation);
+    glm_scale(result, scale);
+    glUniformMatrix4fv(g_pipeline3D.transformUniform, 1, GL_FALSE, (const float*)result);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, texCoordSize, GL_FLOAT, GL_FALSE, 0, texCoords);
+    glEnableVertexAttribArray(1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, res_get_texture(texture));
+    glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, indices);
+}
+
+void rndr_draw_vertices_3d(float vertices[], int verticesSize, float texCoords[], float texCoordSize,
                      vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture)
 {
 
@@ -215,8 +277,8 @@ void rndr_draw_vertices(float vertices[], int verticesSize, float texCoords[], f
     glm_translate_make(result, position);
     glm_rotate(result, RADIAN(rotationAngle), rotation);
     glm_scale(result, scale);
-    unsigned int transformLoc = glGetUniformLocation(g_shaderProgram, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
+    //unsigned int transformLoc = glGetUniformLocation(g_pipeline3D.shaderProgram, "transform");
+    glUniformMatrix4fv(g_pipeline3D.transformUniform, 1, GL_FALSE, (const float*)result);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), vertices);
     glEnableVertexAttribArray(0);
@@ -256,10 +318,11 @@ void rndr_unload_texture(handle_t textureID){
 }
 // "assets/minecraft/textures/blocks/dirt.png"
 
-void rndr_end(){
-    // stub
+void rndr_end_3d(){
+    glUseProgram(g_pipelineUI.shaderProgram);
 }
 
 void rndr_destroy(){
-    if(g_shaderProgram != 0) glDeleteProgram(g_shaderProgram);
+    if(g_pipeline3D.shaderProgram != 0) glDeleteProgram(g_pipeline3D.shaderProgram);
+    if(g_pipelineUI.shaderProgram != 0) glDeleteProgram(g_pipelineUI.shaderProgram);
 }

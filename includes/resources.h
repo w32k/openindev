@@ -11,6 +11,7 @@ typedef enum resourcetype {
     RESTYPE_STONE_BLOCK,
     RESTYPE_DIAMOND_BLOCK,
     RESTYPE_DIAMOND_ITEM,
+    RESTYPE_DIAMOND_SWORD,
     RESTYPE_END_OF_ENUM
 } resourcetype_t;
 

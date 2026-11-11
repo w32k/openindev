@@ -11,8 +11,8 @@ int main(){
         return -1;
     }
     camera_t camera = {
-        {0.0f, 0.0f, 3.0f},
-        {0.0f, 0.0f, -1.0f},
+        {0.0f, 0.0f, -3.0f},
+        {0.0f, 0.0f, 1.0f},
         {0.0f, 1.0f, 0.0f},
         90.0f
     };
@@ -26,37 +26,39 @@ int main(){
     vec3 r = {0.0f};
     bool isLocked = true;
     bool mouseInit = false;
+
     win_lock_mouse();
     while(!win_should_close()){
         float speed = 2.5f * win_return_dt();
         if(win_is_key_down(KEY_W)){
-            glm_vec3_scale(camera.center, speed, r);
-            glm_vec3_add(camera.eye, r, camera.eye);
+            glm_vec3_scale(camera.target, speed, r);
+            glm_vec3_add(camera.position, r, camera.position);
         }
         if(win_is_key_down(KEY_S)){
-            glm_vec3_scale(camera.center, speed, r);
-            glm_vec3_sub(camera.eye, r, camera.eye);
+            glm_vec3_scale(camera.target, speed, r);
+            glm_vec3_sub(camera.position, r, camera.position);
         }
         if(win_is_key_down(KEY_A)){
-            glm_vec3_cross(camera.center, camera.up, r);
+            glm_vec3_cross(camera.target, camera.up, r);
             glm_vec3_normalize(r);
             glm_vec3_scale(r, speed, r);
-            glm_vec3_sub(camera.eye, r, camera.eye);
+            glm_vec3_sub(camera.position, r, camera.position);
         }
         if(win_is_key_down(KEY_D)){
-            glm_vec3_cross(camera.center, camera.up, r);
+            glm_vec3_cross(camera.target, camera.up, r);
             glm_vec3_normalize(r);
             glm_vec3_scale(r, speed, r);
-            glm_vec3_add(camera.eye, r, camera.eye);
+            glm_vec3_add(camera.position, r, camera.position);
         }
         if(win_is_key_down(KEY_ESC)){
-            if(isLocked == true){
-                win_unlock_mouse();
-                isLocked = false;
-            } else {
-                win_lock_mouse();
-                isLocked = true;
-            }
+            // if(isLocked == true){
+            //     win_unlock_mouse();
+            //     isLocked = false;
+            // } else {
+            //     win_lock_mouse();
+            //     isLocked = true;
+            // }
+            break;
         }
         if(isLocked){
             if(win_did_mouse_move()){
@@ -72,21 +74,24 @@ int main(){
                     direction[1] = sinf(RADIAN(pitch));
                     direction[2] = sinf(RADIAN(yaw)) * cosf(RADIAN(pitch));
                     glm_vec3_normalize(direction);
-                    glm_vec3_copy(direction, camera.center);
+                    glm_vec3_copy(direction, camera.target);
                 } else mouseInit = true;
 
             }
         }
 
         rndr_clear(180, 225, 255, 255);
-        rndr_begin(&camera);
+        rndr_begin();
+        rndr_begin_3d(&camera);
         rndr_draw_cube((vec3_t){0.0f, 0.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, 0, RESTYPE_DIAMOND_BLOCK);
-        rndr_draw_texture((vec3_t){1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
-        rndr_draw_texture((vec3_t){-1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
-        rndr_draw_texture((vec3_t){1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
-        rndr_draw_texture((vec3_t){-1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+        rndr_draw_texture_3d((vec3_t){1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+        rndr_draw_texture_3d((vec3_t){-1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+        rndr_draw_texture_3d((vec3_t){1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
+        rndr_draw_texture_3d((vec3_t){-1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
 
         i += 100.0f * win_return_dt();
+        rndr_end_3d();
+        rndr_draw_texture_2d((vec3_t){100.0f, 100.0f, 0.0f}, (vec3_t){100.0f, 100.0f, 10.0f}, (vec3_t){1.0f, 0.0f, 0.0f}, 180, RESTYPE_DIAMOND_SWORD);
         rndr_end();
         win_swap_window();
     }
