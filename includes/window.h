@@ -6,32 +6,24 @@
 
 
 #include <openindev.h>
+#include <renderer.h>
 
+typedef enum _keycodes {
+    KEY_W, KEY_A, KEY_S, KEY_D, KEY_ESC,
+    KEY_END_OF_ENUM
+} keycodes_t;
 
-typedef bool (*wininit_t)(void* data);
-typedef bool (*winonresize_t)(void* data, int width, int height);
-typedef bool (*winrender_t)(void* data);
-typedef bool (*wincleanup_t)(void* data);
-
-typedef struct window {
-    const char* title;
-    wininit_t init;
-    winonresize_t resize;
-    winrender_t render;
-    wincleanup_t cleanup;
-    void* userData;
-    int width;
-    int height;
-} window_t;
-
-
-int win_create(window_t* window);
-uint32_t win_return_fps();
+bool win_create(const char* title, int width, int height);
+bool win_should_close();
+void win_swap_window();
+void win_close();
+uint64_t win_return_ticks();
+uint64_t win_return_fps();
 float win_return_dt();
-
-
-
-
-
+bool win_is_key_down(keycodes_t key);
+void win_return_rel_mouse_state(float* x, float* y);
+void win_lock_mouse();
+void win_unlock_mouse();
+bool win_did_mouse_move();
 
 #endif

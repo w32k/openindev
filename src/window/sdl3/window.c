@@ -3,19 +3,35 @@
 
 #include <renderer.h>
 
+static const SDL_Scancode keyCodeToSDLScanCodeMap[] = {
+    [KEY_W] = SDL_SCANCODE_W,
+    [KEY_A] = SDL_SCANCODE_A,
+    [KEY_S] = SDL_SCANCODE_S,
+    [KEY_D] = SDL_SCANCODE_D,
+    [KEY_ESC] = SDL_SCANCODE_ESCAPE
+};
 
 
 
-static uint32_t g_fps = 60;
-static uint32_t g_lastTime = 0;
-static uint32_t g_curTime = 0;
-//static uint32_t g_dt = 100;
+// TODO: put all of this in a struct
+// so its cleaner
+static uint64_t g_lastTick = 0;
+static uint64_t g_fps = 0;
+static uint64_t g_fpsCounter = 0;
+static uint64_t g_lastTime = 0;
+static uint64_t g_curTime = 0;
+static SDL_Window* g_sdlWindow = NULL;
+static SDL_Event g_event = {0};
+static bool g_mouseMoved = false;
+#ifdef GRAPHICS_GLES2
+static SDL_GLContext g_glContext = NULL;
+#endif
 
-int win_create(window_t* window){
+bool win_create(const char* title, int width, int height){
     bool result = SDL_Init(SDL_INIT_VIDEO);
     if(result == false){
         DEBUG_FAIL("couldn't initialize SDL!\n");
-        return -1;
+        return false;
     }
     int flag = 0;
     #ifdef GRAPHICS_GLES2
@@ -27,86 +43,115 @@ int win_create(window_t* window){
     #endif
 
     DEBUG_INFO("Creating SDL3 Window\n");
-    SDL_Window* sdlWindow = SDL_CreateWindow(window->title, window->width, window->height, flag | SDL_WINDOW_RESIZABLE);
-    if(sdlWindow == NULL){
+    g_sdlWindow = SDL_CreateWindow(title, width, height, flag | SDL_WINDOW_RESIZABLE);
+    if(g_sdlWindow == NULL){
         DEBUG_INFO("can't create window: %s\n", SDL_GetError());
-        goto END_4;
         return false;
     }
     #ifdef GRAPHICS_GLES2
-    SDL_GLContext glContext = SDL_GL_CreateContext(sdlWindow);
-    if(glContext == NULL){
+    g_glContext = SDL_GL_CreateContext(g_sdlWindow);
+    if(g_glContext == NULL){
         DEBUG_INFO("can't create gl context: %s\n", SDL_GetError());
-        goto END_3;
+        SDL_DestroyWindow(g_sdlWindow);
+        SDL_Quit();
         return false;
     }
-    SDL_GL_MakeCurrent(sdlWindow, glContext);
+    SDL_GL_MakeCurrent(g_sdlWindow, g_glContext);
     #endif
     result = rndr_create();
     if(result == false){
         DEBUG_FAIL("couldn't setup renderer\n");
-        goto END_2;
-    }
-    rndr_resize(window->width, window->height);
-
-    result = window->init(window->userData);
-    if(result == false) goto END_1;
-    SDL_Event event;
-    bool running = true;
-    uint32_t fps = 0;
-    uint32_t curTick = SDL_GetTicks();
-    g_curTime = SDL_GetTicks();
-    while(running){
-        while(SDL_PollEvent(&event)){
-            switch(event.type){
-                case SDL_EVENT_QUIT:{
-                    running = false;
-                    break;
-                }
-                case SDL_EVENT_WINDOW_RESIZED:{
-                    rndr_resize(event.window.data1, event.window.data2);
-                    bool result = window->resize(window->userData, event.window.data1, event.window.data2);
-                    if(result == false) break;
-                    break;
-                }
-            }
-        }
-        rndr_begin();
-        bool result = window->render(window->userData);
-        if(result == false) break;
-        rndr_end();
+        SDL_DestroyWindow(g_sdlWindow);
         #ifdef GRAPHICS_GLES2
-        SDL_GL_SwapWindow(sdlWindow);
+        SDL_GL_DestroyContext(g_glContext);
         #endif
-        if(SDL_GetTicks() - curTick >= 1000){
-            g_fps = fps;
-            curTick = SDL_GetTicks();
-            DEBUG_INFO("FPS: %d\n", g_fps);
-            fps = 0;
-        } else fps++;
-        g_lastTime = g_curTime;
-        g_curTime = SDL_GetTicks();
+        SDL_Quit();
+        return false;
     }
-    window->cleanup(window->userData);
-END_1:
-    rndr_destroy();
-END_2:
-    #ifdef GRAPHICS_GLES2
-    SDL_GL_DestroyContext(glContext);
-    #endif
-END_3:
-    SDL_DestroyWindow(sdlWindow);
-END_4:
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    SDL_Quit();
-    return 0;
+    rndr_resize(width, height);
+    g_lastTick = SDL_GetTicks();
+    return true;
 }
 
+bool win_should_close(){
+    g_mouseMoved = false;
+    while(SDL_PollEvent(&g_event)){
+        switch(g_event.type){
+            case SDL_EVENT_QUIT:{
+                return true;
+                break;
+            }
+            case SDL_EVENT_WINDOW_RESIZED:{
+                rndr_resize(g_event.window.data1, g_event.window.data2);
+                break;
+            }
+            case SDL_EVENT_MOUSE_MOTION:{
+                g_mouseMoved = true;
+                break;
+            }
+        }
+    }
+    return false;
+}
 
-uint32_t win_return_fps(){
+uint64_t win_return_ticks(){
+    return SDL_GetTicks();
+}
+
+void win_swap_window(){
+    #ifdef GRAPHICS_GLES2
+    SDL_GL_SwapWindow(g_sdlWindow);
+    #endif
+    g_lastTime = g_curTime;
+    g_curTime = SDL_GetTicks();
+    if(SDL_GetTicks() - g_lastTick >= 1000){
+        g_fps = g_fpsCounter;
+        DEBUG_INFO("FPS: " U64_PRINT " \n", g_fps);
+        g_fpsCounter = 0;
+        g_lastTick = SDL_GetTicks();
+    } else g_fpsCounter++;
+}
+
+void win_close(){
+    rndr_destroy();
+    #ifdef GRAPHICS_GLES2
+    SDL_GL_DestroyContext(g_glContext);
+    #endif
+    SDL_DestroyWindow(g_sdlWindow);
+    SDL_Quit();
+}
+
+uint64_t win_return_fps(){
     return g_fps;
 }
 
 float win_return_dt(){
     return (float)(g_curTime - g_lastTime) / 1000.0f;
+}
+// a bit unsafe?
+// TODO: find a way to make this a bit safer
+bool win_is_key_down(keycodes_t key){
+    if(key >= KEY_END_OF_ENUM) return false;
+    const bool* keyboardState = SDL_GetKeyboardState(NULL);
+    return keyboardState[keyCodeToSDLScanCodeMap[key]]; // uhh
+}
+
+
+
+void win_return_rel_mouse_state(float* x, float* y){
+    SDL_GetRelativeMouseState(x, y);
+}
+
+void win_lock_mouse(){
+    //SDL_HideCursor();
+    SDL_SetWindowRelativeMouseMode(g_sdlWindow, true);
+}
+
+void win_unlock_mouse(){
+    //SDL_ShowCursor();
+    SDL_SetWindowRelativeMouseMode(g_sdlWindow, false);
+}
+
+bool win_did_mouse_move(){
+    return g_mouseMoved;
 }

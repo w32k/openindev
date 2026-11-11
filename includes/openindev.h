@@ -12,7 +12,11 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#ifdef _WIN32
+#define U64_PRINT "%lld"
+#else
+#define U64_PRINT "%ld"
+#endif
 #define VER "INDEV"
 #define IMPL "MC 1.7.10"
 #define DEBUG_FAIL(message, ...) printf("[FAIL] (%s:%d) " message, __FILE__, __LINE__, ##__VA_ARGS__)

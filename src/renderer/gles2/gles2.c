@@ -163,23 +163,19 @@ void rndr_clear(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void rndr_begin(){
+void rndr_begin(camera_t* camera){
     glUseProgram(shaderProgram);
     mat4_t perspective;
     glm_mat4_identity(perspective);
-    glm_perspective(90.0f * (M_PI / 180.0f), g_width/g_height, 0.1f, 100.0f, perspective);
+    glm_perspective(RADIAN(camera->fov), g_width/g_height, 0.1f, 100.0f, perspective);
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "perspective");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)perspective);
 
-    vec3_t eye = {0};
-    eye[2] = 3.0f;
-    vec3_t center = {0};
-    vec3_t up = {0};
-    up[1] = 1.0f;
-    mat4_t view;
-
+    mat4 view;
+    vec3 eyePlusCenter;
     glm_mat4_identity(view);
-    glm_lookat(eye, center, up, view);
+    glm_vec3_add(camera->eye, camera->center, eyePlusCenter);
+    glm_lookat(camera->eye, eyePlusCenter, camera->up, view);
     unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const float*)view);
 }
@@ -217,7 +213,7 @@ void rndr_draw_vertices(float vertices[], int verticesSize, float texCoords[], f
     (void)verticesSize;
     mat4_t result;
     glm_translate_make(result, position);
-    glm_rotate(result, rotationAngle * (M_PI / 180.0f), rotation);
+    glm_rotate(result, RADIAN(rotationAngle), rotation);
     glm_scale(result, scale);
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (const float*)result);
