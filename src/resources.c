@@ -11,7 +11,10 @@ struct textures {
 // TODO: make these not hardcoded
 // because we want support for texture packs
 static const char* texturePaths[] = {
+    [RESTYPE_NONE] = "assets/minecraft/textures/blocks/stone.png",
     [RESTYPE_STONE_BLOCK] = "assets/minecraft/textures/blocks/stone.png",
+    [RESTYPE_DIRT_BLOCK] = "assets/minecraft/textures/blocks/dirt.png",
+    [RESTYPE_SNOW_BLOCK] = "assets/minecraft/textures/blocks/snow.png",
     [RESTYPE_DIAMOND_BLOCK] = "assets/minecraft/textures/blocks/diamond_block.png",
     [RESTYPE_DIAMOND_ITEM] = "assets/minecraft/textures/items/diamond.png",
     [RESTYPE_DIAMOND_SWORD] = "assets/minecraft/textures/items/diamond_sword.png"

@@ -1,5 +1,5 @@
 #include <renderer.h>
-
+#include <string.h>
 
 
 
@@ -94,10 +94,21 @@ void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotati
         0.0f, 1.0f,
         0.0f, 0.0f,
     };
-    rndr_draw_vertices_3d(vertices, 36, texCoords, 2, position, scale, rotation, rotationAngle, texture);
+    renderobject_t object = {0};
+    object.vertices = vertices;
+    object.texCoords = texCoords;
+    object.indices = NULL;
+    memcpy(object.position, position, sizeof(vec3_t));
+    memcpy(object.scale, scale, sizeof(vec3_t));
+    memcpy(object.rotation, rotation, sizeof(vec3_t));
+    object.amountOfVertices = 36;
+    object.amountOfTexCoords = 2;
+    object.rotationAngle = rotationAngle;
+    object.texture = texture;
+    rndr_draw_vertices_3d(&object);
 }
 
-void rndr_draw_texture_3d(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
+void rndr_draw_texture(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
         1.0f, 1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
@@ -113,30 +124,23 @@ void rndr_draw_texture_3d(vec3_t position, vec3_t scale, vec3_t rotation, float 
         0.0f, 0.0f,
         0.0f, 1.0f,
     };
-    rndr_draw_vertices_with_indices_3d(vertices, indices, 6, texCoords, 2, position, scale, rotation, rotationAngle, texture);
-}
+    renderobject_t object = {0};
+    object.vertices = vertices;
+    object.texCoords = texCoords;
+    object.indices = indices;
+    memcpy(object.position, position, sizeof(vec3_t));
+    memcpy(object.scale, scale, sizeof(vec3_t));
+    memcpy(object.rotation, rotation, sizeof(vec3_t));
+    object.amountOfVertices = 0;
+    object.amountOfTexCoords = 2;
+    object.amountOfIndices = 6;
+    object.rotationAngle = rotationAngle;
+    object.texture = texture;
 
-void rndr_draw_texture_2d(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
-    float vertices[] = {
-        1.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f
-    };
-    unsigned int indices[] = {
-        0, 1, 2, 0, 2, 3
-    };
-    float texCoords[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-    };
-    rndr_draw_vertices_with_indices_2d(vertices, indices, 6, texCoords, 2, position, scale, rotation, rotationAngle, texture);
+    rndr_draw_vertices_with_indices_3d(&object);
 }
 
 
-// broken
 void rndr_draw_texture2(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
         1.0f, 1.0f, 0.0f,
@@ -153,7 +157,18 @@ void rndr_draw_texture2(vec3_t position, vec3_t scale, vec3_t rotation, float ro
         0.0f, 0.0f,
         1.0f, 1.0f,
         0.0f, 0.0f,
-        0.0f, 1.0f,
+        0.0f, 1.0f
     };
-    rndr_draw_vertices_3d(vertices, 6, texCoords, 2, position, scale, rotation, rotationAngle, texture);
+    renderobject_t object = {0};
+    object.vertices = vertices;
+    object.texCoords = texCoords;
+    object.indices = NULL;
+    memcpy(object.position, position, sizeof(vec3_t));
+    memcpy(object.scale, scale, sizeof(vec3_t));
+    memcpy(object.rotation, rotation, sizeof(vec3_t));
+    object.amountOfVertices = 6;
+    object.amountOfTexCoords = 2;
+    object.rotationAngle = rotationAngle;
+    object.texture = texture;
+    rndr_draw_vertices_3d(&object);
 }

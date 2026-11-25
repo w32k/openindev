@@ -23,7 +23,7 @@ static uint64_t g_curTime = 0;
 static SDL_Window* g_sdlWindow = NULL;
 static SDL_Event g_event = {0};
 static bool g_mouseMoved = false;
-#ifdef GRAPHICS_GLES2
+#if defined(GRAPHICS_GLES2) || defined(GRAPHICS_GL11)
 static SDL_GLContext g_glContext = NULL;
 #endif
 
@@ -33,22 +33,25 @@ bool win_create(const char* title, int width, int height){
         DEBUG_FAIL("couldn't initialize SDL!\n");
         return false;
     }
-    int flag = 0;
     #ifdef GRAPHICS_GLES2
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    flag = SDL_WINDOW_OPENGL;
+    #elif GRAPHICS_GL11
+    SDL_SetHint(SDL_HINT_OPENGL_DRIVER, "1");
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     #endif
 
     DEBUG_INFO("Creating SDL3 Window\n");
-    g_sdlWindow = SDL_CreateWindow(title, width, height, flag | SDL_WINDOW_RESIZABLE);
+    g_sdlWindow = SDL_CreateWindow(title, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if(g_sdlWindow == NULL){
         DEBUG_INFO("can't create window: %s\n", SDL_GetError());
         return false;
     }
-    #ifdef GRAPHICS_GLES2
+    #if defined(GRAPHICS_GLES2) || defined(GRAPHICS_GL11)
     g_glContext = SDL_GL_CreateContext(g_sdlWindow);
     if(g_glContext == NULL){
         DEBUG_INFO("can't create gl context: %s\n", SDL_GetError());
@@ -99,7 +102,7 @@ uint64_t win_return_ticks(){
 }
 
 void win_swap_window(){
-    #ifdef GRAPHICS_GLES2
+    #if defined(GRAPHICS_GLES2) || defined(GRAPHICS_GL11)
     SDL_GL_SwapWindow(g_sdlWindow);
     #endif
     g_lastTime = g_curTime;
@@ -114,7 +117,7 @@ void win_swap_window(){
 
 void win_close(){
     rndr_destroy();
-    #ifdef GRAPHICS_GLES2
+    #if defined(GRAPHICS_GLES2) || defined(GRAPHICS_GL11)
     SDL_GL_DestroyContext(g_glContext);
     #endif
     SDL_DestroyWindow(g_sdlWindow);

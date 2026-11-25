@@ -8,6 +8,7 @@
 typedef enum blocks {
     BLOCK_AIR,
     BLOCK_STONE,
+    BLOCK_DIRT,
     BLOCK_END_OF_ENUM,
 } blocks_t;
 
