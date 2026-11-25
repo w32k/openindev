@@ -8,101 +8,55 @@
 
 void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
 
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f,  1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
 
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
 
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f, -1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
 
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
 
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f
-    };
-
-    float texCoords[] = {
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
+        -1.0f,  1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f
     };
     renderobject_t object = {0};
     object.vertices = vertices;
-    object.texCoords = texCoords;
     object.indices = NULL;
     memcpy(object.position, position, sizeof(vec3_t));
     memcpy(object.scale, scale, sizeof(vec3_t));
     memcpy(object.rotation, rotation, sizeof(vec3_t));
     object.amountOfVertices = 36;
-    object.amountOfTexCoords = 2;
     object.rotationAngle = rotationAngle;
     object.texture = texture;
     rndr_draw_vertices_3d(&object);
@@ -110,29 +64,21 @@ void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotati
 
 void rndr_draw_texture(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
-        1.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f
+         1.0f,  1.0f,  0.0f,        1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f,  0.0f,        1.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f,        0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f,  0.0f,         0.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
     };
     unsigned int indices[] = {
         0, 1, 2, 0, 2, 3
     };
-    float texCoords[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-    };
     renderobject_t object = {0};
     object.vertices = vertices;
-    object.texCoords = texCoords;
     object.indices = indices;
     memcpy(object.position, position, sizeof(vec3_t));
     memcpy(object.scale, scale, sizeof(vec3_t));
     memcpy(object.rotation, rotation, sizeof(vec3_t));
     object.amountOfVertices = 0;
-    object.amountOfTexCoords = 2;
     object.amountOfIndices = 6;
     object.rotationAngle = rotationAngle;
     object.texture = texture;
@@ -143,31 +89,20 @@ void rndr_draw_texture(vec3_t position, vec3_t scale, vec3_t rotation, float rot
 
 void rndr_draw_texture2(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
-        1.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f
-    };
-
-    float texCoords[] = {
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f
+         1.0f,  1.0f, 0.0f,         1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f,         1.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f,         0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f, 0.0f,         1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f,         0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f, 0.0f,         0.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f
     };
     renderobject_t object = {0};
     object.vertices = vertices;
-    object.texCoords = texCoords;
     object.indices = NULL;
     memcpy(object.position, position, sizeof(vec3_t));
     memcpy(object.scale, scale, sizeof(vec3_t));
     memcpy(object.rotation, rotation, sizeof(vec3_t));
     object.amountOfVertices = 6;
-    object.amountOfTexCoords = 2;
     object.rotationAngle = rotationAngle;
     object.texture = texture;
     rndr_draw_vertices_3d(&object);

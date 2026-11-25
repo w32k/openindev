@@ -202,10 +202,12 @@ void rndr_draw_vertices_with_indices_3d(renderobject_t* object){
     glm_scale(result, object->scale);
     glUniformMatrix4fv(g_pipeline3D.transformUniform, 1, GL_FALSE, (const float*)result);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, object->vertices);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), object->vertices);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, object->amountOfTexCoords, GL_FLOAT, GL_FALSE, 0, object->texCoords);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (3 * sizeof(float))));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (5 * sizeof(float))));
+    glEnableVertexAttribArray(2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, res_get_texture(object->texture));
@@ -219,10 +221,12 @@ void rndr_draw_vertices_3d(renderobject_t* object){
     glm_scale(result, object->scale);
     glUniformMatrix4fv(g_pipeline3D.transformUniform, 1, GL_FALSE, (const float*)result);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), object->vertices);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), object->vertices);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, object->amountOfTexCoords, GL_FLOAT, GL_FALSE, 0, object->texCoords);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (3 * sizeof(float))));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (5 * sizeof(float))));
+    glEnableVertexAttribArray(2);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, res_get_texture(object->texture));

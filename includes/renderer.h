@@ -20,13 +20,11 @@ typedef struct camera {
 
 typedef struct renderobject {
     float* vertices;
-    float* texCoords;
     unsigned int* indices;
     vec3_t position;
     vec3_t scale;
     vec3_t rotation;
     float amountOfVertices;
-    float amountOfTexCoords;
     float amountOfIndices;
     float rotationAngle;
     resourcetype_t texture;
