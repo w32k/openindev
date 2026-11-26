@@ -14,6 +14,7 @@ struct renderpipeline {
     int projectionUniform;
     int transformUniform;
     int viewUniform;
+    handle_t textureArray;
 };
 
 static struct renderpipeline g_pipeline3D = {0};
@@ -98,6 +99,7 @@ static unsigned int link_program(int vShader, int fShader){
 }
 
 static unsigned int create_shader_program(const char* vertexPath, const char* fragPath){
+
     unsigned int program = 0;
     char* vertexShaderSource = load_shader_from_file(vertexPath);
     if(vertexShaderSource == NULL){
@@ -140,10 +142,15 @@ bool rndr_create(){
         DEBUG_FAIL("couldn't initialize GLAD\n");
         return false;
     }
-    DEBUG_INFO("\n\tVENDOR: %s\n\tVERSION: %s\n\tRENDERER: %s\n",
-            (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_VERSION), (char*)glGetString(GL_RENDERER));
+    // DEBUG_INFO("\n\tVENDOR: %s\n\tVERSION: %s\n\tRENDERER: %s\n",
+    //         (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_VERSION), (char*)glGetString(GL_RENDERER));
+    DEBUG_INFO("Starting renderer..\n");
+    DEBUG_INFO("VENDOR: %s\n", (char*)glGetString(GL_VENDOR));
+    DEBUG_INFO("VERSION: %s\n", (char*)glGetString(GL_VERSION));
+    DEBUG_INFO("RENDER DEVICE: %s\n", (char*)glGetString(GL_RENDERER));
+    DEBUG_INFO("SHADER: %s\n", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
     #endif
-    g_pipeline3D.shaderProgram = create_shader_program("shaders/vertex.glsl", "shaders/fragment.glsl");
+    g_pipeline3D.shaderProgram = create_shader_program("shaders/default.vsh", "shaders/default.fsh");
     if(g_pipeline3D.shaderProgram == 0){
         DEBUG_FAIL("couldn't create shader program for g_pipeline3D\n");
         return false;
@@ -202,16 +209,17 @@ void rndr_draw_vertices_with_indices_3d(renderobject_t* object){
     glm_scale(result, object->scale);
     glUniformMatrix4fv(g_pipeline3D.transformUniform, 1, GL_FALSE, (const float*)result);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), object->vertices);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), object->vertices);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (3 * sizeof(float))));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)((uintptr_t)object->vertices + (3 * sizeof(float))));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (5 * sizeof(float))));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)((uintptr_t)object->vertices + (5 * sizeof(float))));
     glEnableVertexAttribArray(2);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)((uintptr_t)object->vertices + (9 * sizeof(float))));
+    glEnableVertexAttribArray(3);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, res_get_texture(object->texture));
-    glDrawElements(GL_TRIANGLES, object->amountOfIndices, GL_UNSIGNED_INT, object->indices);
+    glDrawElements(GL_TRIANGLE_STRIP, object->amountOfIndices, GL_UNSIGNED_INT, object->indices);
 }
 
 void rndr_draw_vertices_3d(renderobject_t* object){
@@ -221,17 +229,19 @@ void rndr_draw_vertices_3d(renderobject_t* object){
     glm_scale(result, object->scale);
     glUniformMatrix4fv(g_pipeline3D.transformUniform, 1, GL_FALSE, (const float*)result);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), object->vertices);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), object->vertices);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (3 * sizeof(float))));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)((uintptr_t)object->vertices + (3 * sizeof(float))));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)((uintptr_t)object->vertices + (5 * sizeof(float))));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)((uintptr_t)object->vertices + (5 * sizeof(float))));
     glEnableVertexAttribArray(2);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)((uintptr_t)object->vertices + (9 * sizeof(float))));
+    glEnableVertexAttribArray(3);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, res_get_texture(object->texture));
     glDrawArrays(GL_TRIANGLES, 0, object->amountOfVertices);
 }
+
 
 // TODO: optimize
 handle_t rndr_load_texture(const char* path){
@@ -255,6 +265,42 @@ handle_t rndr_load_texture(const char* path){
     return (handle_t)texture;
 }
 
+void rndr_start_texture_array_loading(){
+    glActiveTexture(GL_TEXTURE0);
+    glGenTextures(1, &g_pipeline3D.textureArray);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, g_pipeline3D.textureArray);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, 16, 16, 100, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+}
+
+bool rndr_load_texture_to_texture_array(const char* path, unsigned int index){
+    if(path != NULL){
+        int width, height, nrChannels;
+        uint8_t* data = stbi_load(path, &width, &height, &nrChannels, 4);
+        if(data == NULL){
+            DEBUG_INFO("can't load texture\n");
+            return false;
+        }
+        if(width > 16) width = 16;
+        if(height > 16) height = 16;
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        stbi_image_free(data);
+    } else {
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, 16, 16, 1, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    }
+
+
+    return true;
+}
+
+void rndr_end_texture_array_loading(){
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+}
+
+
 void rndr_unload_texture(handle_t textureID){
     if(textureID != 0) glDeleteTextures(1, &textureID);
 }
@@ -265,4 +311,5 @@ void rndr_end_3d(){
 
 void rndr_destroy(){
     if(g_pipeline3D.shaderProgram != 0) glDeleteProgram(g_pipeline3D.shaderProgram);
+    if(g_pipeline3D.textureArray != 0) glDeleteTextures(1, &g_pipeline3D.textureArray);
 }

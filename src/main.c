@@ -58,10 +58,7 @@ int main(){
         {0.0f, 1.0f, 0.0f},
         90.0f, 0.0f, 0.0f
     };
-    result = res_load_all_textures();
-    if(result == false){
-        return -2;
-    }
+    res_load_all_default_textures();
     float i = 0.0f;
 
     win_lock_mouse();
@@ -77,7 +74,18 @@ int main(){
         }
         rndr_begin_3d(&camera);
 
-        rndr_draw_cube((vec3_t){0, 0, 0}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, 0, RESTYPE_DIAMOND_BLOCK);
+        resourcetype_t textures[] = {
+            RESTYPE_GRASS_BLOCK_SIDE, RESTYPE_GRASS_BLOCK_SIDE, RESTYPE_GRASS_BLOCK_SIDE,
+            RESTYPE_GRASS_BLOCK_SIDE, RESTYPE_DIRT_BLOCK, RESTYPE_GRASS_BLOCK_TOP
+        };
+        resourcetype_t overlayTextures[] = {
+            RESTYPE_GRASS_BLOCK_OVERLAY, RESTYPE_GRASS_BLOCK_OVERLAY, RESTYPE_GRASS_BLOCK_OVERLAY,
+            RESTYPE_GRASS_BLOCK_OVERLAY, RESTYPE_NONE, RESTYPE_NONE
+        };
+
+        rndr_draw_cube_ex((vec3_t){0, 0, 0}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, 0, textures);
+        rndr_draw_cube_ex((vec3_t){0, 0, 0}, (vec3_t){0.501f, 0.5f, 0.501f}, (vec3_t){1.0f, 1.0f, 1.0f}, 0, overlayTextures);
+
         rndr_draw_texture((vec3_t){1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_SWORD);
         rndr_draw_texture((vec3_t){1.0f, -1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);
         rndr_draw_texture((vec3_t){-1.0f, 1.0f, 0.0f}, (vec3_t){0.5f, 0.5f, 0.5f}, (vec3_t){1.0f, 1.0f, 1.0f}, i, RESTYPE_DIAMOND_ITEM);

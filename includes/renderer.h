@@ -43,9 +43,13 @@ void rndr_end_3d();
 void rndr_draw_vertices_with_indices_3d(renderobject_t* object);
 void rndr_draw_vertices_3d(renderobject_t* object);
 handle_t rndr_load_texture(const char* path);
+void rndr_start_texture_array_loading();
+bool rndr_load_texture_to_texture_array(const char* path, unsigned int index);
+void rndr_end_texture_array_loading();
 void rndr_unload_texture(handle_t textureID);
 void rndr_destroy();
 
+void rndr_draw_cube_ex(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture[]);
 void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture);
 void rndr_draw_texture(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture);
 void rndr_draw_texture2(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture);

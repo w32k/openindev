@@ -8,16 +8,23 @@ struct textures {
     handle_t id;
 };
 
+
+
+
+
 // TODO: make these not hardcoded
 // because we want support for texture packs
 static const char* texturePaths[] = {
-    [RESTYPE_NONE] = "assets/minecraft/textures/blocks/stone.png",
+    [RESTYPE_NONE] = NULL,
     [RESTYPE_STONE_BLOCK] = "assets/minecraft/textures/blocks/stone.png",
     [RESTYPE_DIRT_BLOCK] = "assets/minecraft/textures/blocks/dirt.png",
     [RESTYPE_SNOW_BLOCK] = "assets/minecraft/textures/blocks/snow.png",
     [RESTYPE_DIAMOND_BLOCK] = "assets/minecraft/textures/blocks/diamond_block.png",
     [RESTYPE_DIAMOND_ITEM] = "assets/minecraft/textures/items/diamond.png",
-    [RESTYPE_DIAMOND_SWORD] = "assets/minecraft/textures/items/diamond_sword.png"
+    [RESTYPE_DIAMOND_SWORD] = "assets/minecraft/textures/items/diamond_sword.png",
+    [RESTYPE_GRASS_BLOCK_SIDE] = "assets/minecraft/textures/blocks/grass_side.png",
+    [RESTYPE_GRASS_BLOCK_TOP] = "assets/minecraft/textures/blocks/grass_top.png",
+    [RESTYPE_GRASS_BLOCK_OVERLAY] = "assets/minecraft/textures/blocks/grass_side_overlay.png",
 };
 
 
@@ -66,19 +73,24 @@ handle_t res_get_texture(resourcetype_t type){
 }
 
 
-bool res_load_all_textures(){
+void res_load_all_default_textures(){
+    rndr_start_texture_array_loading();
     int texturePathArraySize = ARR_LEN(texturePaths);
     for(int i = 0; i < RESTYPE_END_OF_ENUM; i++){
-        bool result = res_load_texture(i);
-        if(result == false){
-            if(i < texturePathArraySize){
-                DEBUG_WARNING("resource id %d with path %s wasn't loaded\n", i, texturePaths[i]);
-            } else {
-                DEBUG_WARNING("resource id %d wasn't loaded\n", i);
-            }
+        int pathArrayIndex = i;
+        if(i > texturePathArraySize){
+            DEBUG_FAIL("texture %d doesn't have a path, using default\n", i);
+            pathArrayIndex = 0;
         }
+        bool result = rndr_load_texture_to_texture_array(texturePaths[pathArrayIndex], i);
+        if(result == false){
+            DEBUG_INFO("path %s for texture %d doens't exist\n", texturePaths[pathArrayIndex], i);
+        } else {
+            DEBUG_INFO("loaded file %s for texture %d\n", texturePaths[pathArrayIndex], i);
+        }
+
     }
-    return true;
+    rndr_end_texture_array_loading();
 }
 
 void res_unload_all_loaded_textures(){

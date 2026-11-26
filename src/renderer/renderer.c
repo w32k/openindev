@@ -6,49 +6,49 @@
 
 
 
-void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
+void rndr_draw_cube_ex(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture[]){
     float vertices[] = {
-        -1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[0],
+         1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[0],
+         1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[0],
+         1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[0],
+        -1.0f,  1.0f, -1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[0],
+        -1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[0],
 
-        -1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[1],
+         1.0f, -1.0f,  1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[1],
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[1],
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[1],
+        -1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[1],
+        -1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[1],
 
-        -1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[2],
+        -1.0f,  1.0f, -1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[2],
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[2],
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[2],
+        -1.0f, -1.0f,  1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[2],
+        -1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[2],
 
-         1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[3],
+         1.0f,  1.0f, -1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[3],
+         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[3],
+         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[3],
+         1.0f, -1.0f,  1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[3],
+         1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[3],
 
-        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[4],
+         1.0f, -1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[4],
+         1.0f, -1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[4],
+         1.0f, -1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[4],
+        -1.0f, -1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[4],
+        -1.0f, -1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[4],
 
-        -1.0f,  1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f
+        -1.0f,  1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[5],
+         1.0f,  1.0f, -1.0f,        1.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[5],
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[5],
+         1.0f,  1.0f,  1.0f,        1.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[5],
+        -1.0f,  1.0f,  1.0f,        0.0f, 1.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[5],
+        -1.0f,  1.0f, -1.0f,        0.0f, 0.0f,         1.0f, 1.0f, 1.0f, 1.0f,          (float)texture[5]
     };
     renderobject_t object = {0};
     object.vertices = vertices;
@@ -58,16 +58,23 @@ void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotati
     memcpy(object.rotation, rotation, sizeof(vec3_t));
     object.amountOfVertices = 36;
     object.rotationAngle = rotationAngle;
-    object.texture = texture;
     rndr_draw_vertices_3d(&object);
+}
+
+void rndr_draw_cube(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
+    resourcetype_t textures[] = {
+        texture, texture, texture,
+        texture, texture, texture
+    };
+    rndr_draw_cube_ex(position, scale, rotation, rotationAngle, textures);
 }
 
 void rndr_draw_texture(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
-         1.0f,  1.0f,  0.0f,        1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f,  0.0f,        1.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f,        0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f,  0.0f,         0.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
+         1.0f,  1.0f,  0.0f,        1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+         1.0f, -1.0f,  0.0f,        1.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+        -1.0f, -1.0f,  0.0f,        0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+        -1.0f,  1.0f,  0.0f,        0.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
     };
     unsigned int indices[] = {
         0, 1, 2, 0, 2, 3
@@ -89,12 +96,12 @@ void rndr_draw_texture(vec3_t position, vec3_t scale, vec3_t rotation, float rot
 
 void rndr_draw_texture2(vec3_t position, vec3_t scale, vec3_t rotation, float rotationAngle, resourcetype_t texture){
     float vertices[] = {
-         1.0f,  1.0f, 0.0f,         1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f, -1.0f, 0.0f,         1.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,         0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-         1.0f,  1.0f, 0.0f,         1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f,         0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f, 0.0f,         0.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f
+         1.0f,  1.0f, 0.0f,         1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+         1.0f, -1.0f, 0.0f,         1.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+        -1.0f, -1.0f, 0.0f,         0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+         1.0f,  1.0f, 0.0f,         1.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+        -1.0f, -1.0f, 0.0f,         0.0f, 0.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
+        -1.0f,  1.0f, 0.0f,         0.0f, 1.0f,     1.0f, 1.0f, 1.0f, 1.0f,          (float)texture,
     };
     renderobject_t object = {0};
     object.vertices = vertices;
