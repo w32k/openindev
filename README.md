@@ -1,7 +1,10 @@
-# Project Sift
+# Vermilion
 
-this will probably be abandoned, but oh well
+
+Minecraft 1.7.10 compatible client 
+
+isn't playable yet
 
 massive inspiration code design and idea by classicube
 
-no AI was used in this
+There is no LLM generated code in this project
