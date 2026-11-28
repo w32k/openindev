@@ -3,7 +3,6 @@
 #include <net/cconn.h>
 #include <net/cserverbound.h>
 
-#include <windows.h>
 
 int main(){
     DEBUG_INFO("%s %s (implementing %s)\n", CLIENT_NAME, VER, IMPL_VER);
