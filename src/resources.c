@@ -5,7 +5,7 @@
 
 struct textures {
     resourcetype_t type;
-    handle_t id;
+    shandle_t id;
 };
 
 
@@ -63,7 +63,7 @@ bool res_load_texture(resourcetype_t type){
 // we can just do g_textures[type].id, however i'm not doing this here because
 // how about skins? maybe we can make it a seperate array but idk
 // we shall see :^)
-handle_t res_get_texture(resourcetype_t type){
+shandle_t res_get_texture(resourcetype_t type){
     for(int i = 0; i < g_capacity; i++){
         if(g_textures[i].type == type){
             return g_textures[i].id;

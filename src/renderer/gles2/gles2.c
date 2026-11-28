@@ -14,7 +14,7 @@ struct renderpipeline {
     int projectionUniform;
     int transformUniform;
     int viewUniform;
-    handle_t textureArray;
+    shandle_t textureArray;
 };
 
 static struct renderpipeline g_pipeline3D = {0};
@@ -34,7 +34,7 @@ static char* load_shader_from_file(const char* path){
     fseek(fp, 0, SEEK_END);
     size_t fileSize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    //DEBUG_INFO("fileSize is %lld\n", fileSize);
+    //DEBUG_INFO("fileSize is %zu\n", fileSize);
     buffer = calloc(fileSize + 1, sizeof(char));
     if(buffer == NULL){
         DEBUG_FAIL("couldn't allocate memory for shader\n");
@@ -42,11 +42,11 @@ static char* load_shader_from_file(const char* path){
     }
     size_t returnedSize = fread((void*)buffer, sizeof(char), fileSize, fp);
     if(returnedSize != fileSize){
-        //DEBUG_FAIL("file size (%lld) and size read (%lld) don't match\n", fileSize, returnedSize);
+        //DEBUG_FAIL("file size (%zu) and size read (%zu) don't match\n", fileSize, returnedSize);
         free(buffer);
         goto LOAD_SHADER_EXIT;
     }
-    //DEBUG_INFO("loaded shader %s with size of %lld\n", path, returnedSize);
+    //DEBUG_INFO("loaded shader %s with size of %zu\n", path, returnedSize);
 LOAD_SHADER_EXIT:
     fclose(fp);
     return buffer;
@@ -244,8 +244,8 @@ void rndr_draw_vertices_3d(renderobject_t* object){
 
 
 // TODO: optimize
-handle_t rndr_load_texture(const char* path){
-    handle_t texture = 0;
+shandle_t rndr_load_texture(const char* path){
+    shandle_t texture = 0;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -262,7 +262,7 @@ handle_t rndr_load_texture(const char* path){
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
-    return (handle_t)texture;
+    return (shandle_t)texture;
 }
 
 void rndr_start_texture_array_loading(){
@@ -301,7 +301,7 @@ void rndr_end_texture_array_loading(){
 }
 
 
-void rndr_unload_texture(handle_t textureID){
+void rndr_unload_texture(shandle_t textureID){
     if(textureID != 0) glDeleteTextures(1, &textureID);
 }
 

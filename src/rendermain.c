@@ -47,7 +47,7 @@ void controls(camera_t* camera){
     }
 }
 
-int main(){
+int main2(){
     bool result = win_create("Sift", 800, 600);
     if(result == false){
         return -1;

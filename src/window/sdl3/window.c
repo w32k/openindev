@@ -109,7 +109,7 @@ void win_swap_window(){
     g_curTime = SDL_GetTicks();
     if(SDL_GetTicks() - g_lastTick >= 1000){
         g_fps = g_fpsCounter;
-        DEBUG_INFO("FPS: " U64_PRINT " \n", g_fps);
+        DEBUG_INFO("FPS: %zu \n", g_fps);
         g_fpsCounter = 0;
         g_lastTick = SDL_GetTicks();
     } else g_fpsCounter++;

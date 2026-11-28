@@ -3,7 +3,7 @@
 
 
 
-#include <openindev.h>
+#include <vermilion.h>
 
 
 
@@ -23,7 +23,7 @@ typedef enum resourcetype {
 
 
 bool res_load_texture(resourcetype_t type);
-handle_t res_get_texture(resourcetype_t type);
+shandle_t res_get_texture(resourcetype_t type);
 void res_load_all_default_textures();
 void res_unload_all_loaded_textures();
 
